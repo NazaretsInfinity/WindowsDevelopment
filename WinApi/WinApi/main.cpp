@@ -46,7 +46,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case IDC_COPY:
 		{
 			//create buffer
-			const int sz_buffer[256]{}; //sz - string zero(NULL Terminated Line - C-String)
+			char sz_buffer[256]{}; //sz - string zero(NULL Terminated Line - C-String)
 
 			// get deskriptors of text lines.
 			HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
@@ -60,13 +60,23 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 			break;
 
-		case IDC_EDIT_LOGIN: 
+		case IDC_EDIT_LOGIN:
 		{
+			if (GetFocus() == (GetDlgItem(hwnd, IDC_EDIT_LOGIN)))
+			{
+				HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+				SendMessage(hEditLogin, EM_SETSEL ,0,20);
+				SendMessage(hEditLogin, WM_CLEAR ,0,0);
+				
+
+			}
 			
 		}
 		break;
 		}
 		break;
+
+
 	case WM_CLOSE: //send when the button 'close' is pushed. (X)
 		EndDialog(hwnd, 0);
 		break;
