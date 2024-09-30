@@ -62,16 +62,17 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case IDC_EDIT_LOGIN:
 		{
-				HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
 			if (GetFocus() == (GetDlgItem(hwnd, IDC_EDIT_LOGIN)))
 			{
-				SendMessage(hEditLogin, EM_SETSEL ,0,20);
-				SendMessage(hEditLogin, WM_CLEAR ,0,0);		
+			    /*HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+				if (GetWindowTextLength(hEditLogin) >= 14)
+				{
+					SendMessage(hEditLogin, EM_SETSEL, 0, 14);
+					SendMessage(hEditLogin, WM_CLEAR, 0, 0);
+				}*/
 			}
-			else if (GetWindowTextLength(hEditLogin) == 0)
-			{
-				SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)"Enter username");
-			}
+			else if (GetWindowTextLength(GetDlgItem(hwnd, IDC_EDIT_LOGIN)) == 0)SendMessage(GetDlgItem(hwnd, IDC_EDIT_LOGIN), WM_SETTEXT, 0, (LPARAM)"Enter username");
+			
 		}
 		break;
 		}
