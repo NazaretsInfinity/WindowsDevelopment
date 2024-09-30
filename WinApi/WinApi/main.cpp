@@ -1,5 +1,6 @@
 #include<Windows.h>
 #include"resource.h"
+CONST CHAR LOGIN_INVINTATION[] = "Enter username";
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //hwnd - Handler to Window - дескриптор окна -  число, при помощи которого можно обратится к окну.
@@ -34,7 +35,8 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG: // this message send only 1 time during window initialization
 	{
 		HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
-		SetWindowText(hEditLogin, "Enter username");
+		//SetWindowText(hEditLogin, "Enter username");
+		SendMessage(hEditLogin, WM_SETTEXT, 0, (LPARAM)LOGIN_INVINTATION);
 	}
 		break;
 	case WM_COMMAND: //process the pushing of buttons and other user's acts 
@@ -61,17 +63,21 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case IDC_EDIT_LOGIN:
 		{
-			if (GetFocus() == (GetDlgItem(hwnd, IDC_EDIT_LOGIN)))
+		/*	if (GetFocus() == (GetDlgItem(hwnd, IDC_EDIT_LOGIN)))
 			{
-			   /* HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+			    HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
 				if (GetWindowTextLength(hEditLogin) > 14)
 				{
 					SendMessage(hEditLogin, EM_SETSEL, 0, 15);
 					SendMessage(hEditLogin, WM_CLEAR, 0, 0);
-				}*/
+				}
 			}
-			else if (GetWindowTextLength(GetDlgItem(hwnd, IDC_EDIT_LOGIN)) == 0)SendMessage(GetDlgItem(hwnd, IDC_EDIT_LOGIN), WM_SETTEXT, 0, (LPARAM)"Enter username");
+			else if (GetWindowTextLength(GetDlgItem(hwnd, IDC_EDIT_LOGIN)) == 0)SendMessage(GetDlgItem(hwnd, IDC_EDIT_LOGIN), WM_SETTEXT, 0, (LPARAM)"Enter username");*/
+			CHAR buffer[256];
+			SendMessage((HWND)lParam, WM_GETTEXT, 256, (LPARAM)buffer);
+			if (HIWORD(wParam) == EN_SETFOCUS && strcmp(buffer, LOGIN_INVINTATION) == 0)SendMessage((HWND)lParam, WM_SETTEXT, 0, (LPARAM)"");
 			
+			if (HIWORD(wParam) == EN_KILLFOCUS  && strcmp(buffer,"") == 0)SendMessage((HWND)lParam, WM_SETTEXT, 0, (LPARAM)LOGIN_INVINTATION);
 		}
 		break;
 		}
