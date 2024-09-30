@@ -8,7 +8,6 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
-	// диалоговое окно, окно сообщения и обычное.
 	// caption  - заголовок
 
 	/*MessageBox
@@ -64,10 +63,10 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (GetFocus() == (GetDlgItem(hwnd, IDC_EDIT_LOGIN)))
 			{
-			    /*HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
-				if (GetWindowTextLength(hEditLogin) >= 14)
+			   /* HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
+				if (GetWindowTextLength(hEditLogin) > 14)
 				{
-					SendMessage(hEditLogin, EM_SETSEL, 0, 14);
+					SendMessage(hEditLogin, EM_SETSEL, 0, 15);
 					SendMessage(hEditLogin, WM_CLEAR, 0, 0);
 				}*/
 			}
