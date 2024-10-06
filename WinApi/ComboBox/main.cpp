@@ -1,4 +1,6 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include<Windows.h>
+#include<cstdio>
 #include"Resource.h"
 
 CONST CHAR* g_COMBO_BOX_ITEMS[] = {"This" , "is", "my", "first", "combo", "box"};
@@ -41,7 +43,11 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			INT i = SendMessage(hCB, CB_GETCURSEL,0,0);
 			CHAR buffer[256]{};
 			SendMessage(hCB, CB_GETLBTEXT, i, (LPARAM)buffer);
-			MessageBox(hwnd, buffer, "Info", MB_OK );
+			CHAR message[256]{};
+			sprintf(message, "You chose ¹%i with value \"%s\"", i, buffer);
+			//sprintf() - analogue of Format for strings.
+			//specifiers: %i - int;    %s - string
+			MessageBox(hwnd, message, "Info", MB_OK );
 
 		}break;
 		case IDCANCEL:
