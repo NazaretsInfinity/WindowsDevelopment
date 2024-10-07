@@ -8,6 +8,8 @@ BOOL DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 BOOL DlgProcAdd(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+BOOL DlgProcChange(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 	DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, (DLGPROC)DlgProc, 0);
@@ -30,6 +32,7 @@ BOOL DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}break;
 	case WM_COMMAND:
 	{
+
 		switch (LOWORD(wParam))
 		{
 		case IDC_ADD:
@@ -56,10 +59,18 @@ BOOL DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			MessageBox(hwnd, message, "Info", MB_OK);
 		}break;
 
-		case IDCANCEL:
+		case IDC_LIST1:
 		{
-			EndDialog(hwnd, 0);
+			if (HIWORD(wParam) == LBN_DBLCLK)
+			{
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CHANGELIST), hwnd, (DLGPROC)DlgProcChange, 0);
+			}
+
 		}break;
+
+		case IDCANCEL:
+			EndDialog(hwnd, 0);
+		    break;
 
 		}
 	}break;
@@ -104,6 +115,28 @@ BOOL DlgProcAdd(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CLOSE: 
 		EndDialog(hwnd, 0);
 		break;
+	}
+	return FALSE;
+}
+
+BOOL DlgProcChange(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+	{
+		HWND hChange = GetDlgItem(hwnd, IDC_CHANGES);
+		HWND hLB = GetDlgItem(hwnd, IDC_LIST1);
+		INT i = SendMessage(hLB, LB_GETCURSEL, 0, 0);
+		CHAR buffer[256]{};
+		SendMessage(hLB, LB_GETTEXT, i, (LPARAM)buffer);
+		SendMessage(hChange, WM_SETTEXT, 0, (LPARAM)buffer);
+
+	}break; 
+	case WM_COMMAND:
+
+	case WM_CLOSE:
+		EndDialog(hwnd, 0);
 	}
 	return FALSE;
 }
