@@ -4,13 +4,10 @@
 //
 #define IDD_DIALOG1                     101
 #define IDD_ADDITEM                     103
-#define IDD_CHANGELIST                  105
 #define IDC_LIST1                       1001
 #define IDC_EDITNAME                    1002
 #define IDC_ADD                         1003
 #define IDC_DELETEITEM                  1005
-#define IDC_EDIT1                       1006
-#define IDC_CHANGES                     1006
 
 // Next default values for new objects
 // 

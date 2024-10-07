@@ -63,7 +63,7 @@ BOOL DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (HIWORD(wParam) == LBN_DBLCLK)
 			{
-				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_CHANGELIST), hwnd, (DLGPROC)DlgProcChange, 0);
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ADDITEM), hwnd, (DLGPROC)DlgProcChange, 0);
 			}
 
 		}break;
@@ -125,10 +125,57 @@ BOOL DlgProcChange(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_INITDIALOG:
 	{
-		
+		SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"Change");
+		SendMessage(GetDlgItem(hwnd, IDOK), WM_SETTEXT, 0, (LPARAM)"Save this crap");
+	   
+
+		HWND hParent = GetParent(hwnd);
+		HWND hLB = GetDlgItem(hParent, IDC_LIST1);
+		HWND hEdit = GetDlgItem(hwnd, IDC_EDITNAME);
+		INT i = SendMessage(hLB, LB_GETCURSEL, 0, 0);
+		CHAR buffer[256]{};
+		SendMessage(hLB, LB_GETTEXT, i, (LPARAM)buffer);
+		SendMessage(hEdit, WM_SETTEXT, i, (LPARAM)buffer);
+
+		SendMessage(hEdit, EM_SETSEL, 0, SendMessage(hEdit, WM_GETTEXTLENGTH, 0, 0));
 
 	}break; 
+
 	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+
+		case IDOK:
+		{
+			HWND hEdit = GetDlgItem(hwnd, IDC_EDITNAME);
+			HWND hParent = GetParent(hwnd);
+			HWND hListBox = GetDlgItem(hParent, IDC_LIST1);
+
+			CONST INT SIZE = 256;
+			CHAR buffer[SIZE]{};
+
+			SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)buffer);
+			INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+
+
+			if (SendMessage(hListBox, LB_FINDSTRING, -1, (LPARAM)buffer) == LB_ERR)
+			{
+				SendMessage(hListBox, LB_DELETESTRING, i, 0);
+				SendMessage(hListBox, LB_INSERTSTRING, i, (LPARAM)buffer);
+			}
+			else
+			{
+				MessageBox(hwnd, "This currency already exists", "Error", MB_OK | MB_ICONERROR);
+			}
+			EndDialog(hwnd, 0);
+		}break;
+
+		case IDCANCEL: EndDialog(hwnd, 0); break;
+
+		}break;
+
+	}
 
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
