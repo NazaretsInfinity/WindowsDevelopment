@@ -125,12 +125,7 @@ BOOL DlgProcChange(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_INITDIALOG:
 	{
-		HWND hChange = GetDlgItem(hwnd, IDC_CHANGES);
-		HWND hLB = GetDlgItem(hwnd, IDC_LIST1);
-		INT i = SendMessage(hLB, LB_GETCURSEL, 0, 0);
-		CHAR buffer[256]{};
-		SendMessage(hLB, LB_GETTEXT, i, (LPARAM)buffer);
-		SendMessage(hChange, WM_SETTEXT, 0, (LPARAM)buffer);
+		
 
 	}break; 
 	case WM_COMMAND:
