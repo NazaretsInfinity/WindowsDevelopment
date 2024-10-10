@@ -1,4 +1,5 @@
 #include<Windows.h>
+#include<cstdio>
 #define IDC_STATIC 1000 //1) ResourceID for child element
 #define IDC_EDIT 1001
 #define IDC_BUTTON 1002
@@ -52,6 +53,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	//
 	wClass.hInstance = hInstance; 
 	wClass.lpfnWndProc = (WNDPROC)WndProc;
+
 	wClass.lpszClassName = g_sz_WINDOW_CLASS;
 
 	//1) register class
@@ -61,12 +63,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	}
 
 
+	CHAR buffer[256];
+	sprintf_s(buffer, "%s, %i x %i", g_sz_WINDOW_CLASS, 0, 0);
 	//2) Create window
 
 	HWND hwnd = CreateWindowEx(
       NULL, //Window exStyle
       g_sz_WINDOW_CLASS, // Window class name
-      g_sz_WINDOW_CLASS, //Window title
+      buffer, //Window title
       WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_SYSMENU, //Windows style
 	  0,0,
       CW_USEDEFAULT, CW_USEDEFAULT, //Window size
@@ -110,7 +114,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 
-	case WM_CREATE: // here we creates main window elements(child windows)
+	case WM_CREATE:// here we creates main window elements(child windows)
+	{
 		CreateWindowEx(
 			NULL,
 			"Static",
@@ -142,7 +147,32 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			(HMENU)IDC_BUTTON,
 			GetModuleHandle(NULL),
 			NULL);
-		break;
+	}break;
+
+	case WM_SIZE:
+	{
+		UINT width = LOWORD(lParam);
+		UINT height = HIWORD(lParam);
+
+
+		CHAR buffer[256]{};
+		sprintf_s(buffer, "Size: %ix%i",width, height);
+		SetWindowText(hwnd, buffer);
+		
+	}break;
+
+	case WM_MOVE:
+	{
+		UINT x = LOWORD(lParam);
+		UINT y = HIWORD(lParam);
+		CHAR buffer[256]{};
+		CHAR title[256]{};
+		
+		
+		sprintf_s(title, "Position: X:%i Y:%i", x, y);
+		SetWindowText(hwnd, title);
+
+	}break;
 
 	case WM_COMMAND:
 	{
@@ -160,8 +190,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		}break;
 		}
-	}
-		break;
+	}break;
+
+	
 
 	case WM_DESTROY:
 		PostQuitMessage(0);
