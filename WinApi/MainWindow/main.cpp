@@ -71,7 +71,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
       NULL, //Window exStyle
       g_sz_WINDOW_CLASS, // Window class name
       titlebar, //Window title
-      WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_SYSMENU, //Windows style
+      WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU, //Windows style
 	  0,0,
       CW_USEDEFAULT, CW_USEDEFAULT, //Window size
       NULL, // Parent(no parent ,'cause it's MAIN) 

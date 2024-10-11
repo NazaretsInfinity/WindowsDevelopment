@@ -6,10 +6,17 @@ CONST INT g_BUTTON_SIZE = 50;
 CONST INT g_INTERVAL = 5;
 CONST INT gX = 10;
 CONST INT gY = 10;
-CONST INT g_DISPLAY_WIDTH = 300;
-CONST INT g_DISPLAY_HEIGHT = 25;
+CONST INT g_DISPLAY_WIDTH = g_BUTTON_SIZE*5+ g_INTERVAL*4;
+CONST INT g_DISPLAY_HEIGHT = 25; // THIS ERROR
 CONST INT g_BUTTON_START_X = gX;
 CONST INT g_BUTTON_START_Y = gY + g_DISPLAY_HEIGHT + g_INTERVAL;
+CONST INT g_OPERATIONS_START_X = gX + (g_BUTTON_SIZE + g_INTERVAL) * 3;
+CONST INT g_OPERATIONS_START_Y = g_BUTTON_START_Y;
+
+CONST INT g_CONTROL_BUTTONS_START_X = gX+ (g_BUTTON_SIZE + g_INTERVAL) * 4;
+CONST INT g_CONTROL_BUTTONS_START_Y = g_BUTTON_START_Y;
+
+CONST CHAR g_OPERATIONS[] = "*/-+";
 
 
 BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -53,9 +60,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		NULL,
 		g_sz_WINDOW_CLASS,
 		g_sz_WINDOW_CLASS,
-		WS_OVERLAPPEDWINDOW,
+		WS_SYSMENU, 
 		CW_USEDEFAULT,CW_USEDEFAULT,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		g_DISPLAY_WIDTH + g_BUTTON_START_X*2+16,
+		g_DISPLAY_HEIGHT*12+22, // FIX HERE
 		NULL,
 		NULL,
 		hInstance,
@@ -83,36 +91,152 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		HWND hEditDisplay = CreateWindowEx
 		(
-			NULL, "Edit", "0",
+			NULL, "Edit", "",
 			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_NUMBER | ES_RIGHT,
 			gX, gY,
-			g_DISPLAY_WIDTH, g_DISPLAY_HEIGHT,
+			g_DISPLAY_WIDTH, g_DISPLAY_HEIGHT,  
 			hwnd,
 			(HMENU)IDC_EDIT_DISPLAY,
 			GetModuleHandle(NULL),
 			NULL
 		);
 
+
+		CHAR buffer[2]{};
 			for (int i = 6; i >= 0; i -= 3)
             {
 				for (int j = 0; j < 3; ++j)
 				{
-					CHAR buffer[256];
-					sprintf_s(buffer, "%i", IDC_BUTTON_0+j+i-999);
+		     
+					buffer[0] = i + j + 49;
+
+					//sprintf_s(buffer, "%i", IDC_BUTTON_0+j+i-999);
 					CreateWindowEx(
 					NULL, "Button", buffer,
 					WS_CHILD | WS_VISIBLE, 
-					g_BUTTON_START_X+(g_BUTTON_SIZE + g_INTERVAL)*j, g_BUTTON_START_Y+ (g_BUTTON_SIZE+g_INTERVAL)*(i/3),
+					g_BUTTON_START_X+(g_BUTTON_SIZE + g_INTERVAL)*j, g_BUTTON_START_Y+ (g_BUTTON_SIZE+g_INTERVAL)*(2-i/3),
 					g_BUTTON_SIZE,g_BUTTON_SIZE,
 					hwnd,
-					(HMENU)(IDC_BUTTON_0+i+j),
+					(HMENU)(IDC_BUTTON_1+i+j),
 					GetModuleHandle(NULL),
 					NULL
 					);
 				}
     		}
+
+			CreateWindowEx(
+				NULL, "Button", "0",
+				WS_CHILD | WS_VISIBLE,
+				g_BUTTON_START_X, g_BUTTON_START_Y +(g_BUTTON_SIZE + g_INTERVAL)*3, 
+				g_BUTTON_SIZE*2, g_BUTTON_SIZE, 
+				hwnd,
+				(HMENU)IDC_BUTTON_0,
+				GetModuleHandle(NULL),
+				NULL
+			);
+
+			CreateWindowEx(
+				NULL, "Button", ".",
+				WS_CHILD | WS_VISIBLE , 
+				g_BUTTON_START_X+ g_BUTTON_SIZE*2 + g_INTERVAL,
+				g_BUTTON_START_Y + (g_BUTTON_SIZE + g_INTERVAL)*3, 
+				g_BUTTON_SIZE, g_BUTTON_SIZE, 
+				hwnd, 
+				(HMENU)IDC_BUTTON_POINT,
+				GetModuleHandle(NULL),
+				NULL
+			);
+
+			CHAR operation[2]{};
+			for (int i = 0; i < 4; ++i)
+			{
+				operation[0] = g_OPERATIONS[i];
+				CreateWindowEx(
+					NULL, "Button", operation,
+					WS_CHILD | WS_VISIBLE,
+					g_OPERATIONS_START_X, g_OPERATIONS_START_Y+ (g_BUTTON_SIZE + g_INTERVAL) * i,
+					g_BUTTON_SIZE, g_BUTTON_SIZE, 
+					hwnd, 
+					(HMENU)IDC_BUTTON_PLUS+i,
+					GetModuleHandle(NULL),
+					NULL
+					);
+			}
+
+			//Creating control buttons
+
+			CreateWindowEx(
+				NULL, "Button", "<-",
+				WS_CHILD | WS_VISIBLE,
+				g_CONTROL_BUTTONS_START_X, g_CONTROL_BUTTONS_START_Y + g_BUTTON_SIZE + g_INTERVAL,
+				g_BUTTON_SIZE, g_BUTTON_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_BSP,
+				GetModuleHandle(NULL),
+				NULL
+			);
+
+			CreateWindowEx(
+				NULL, "Button", "C",
+				WS_CHILD | WS_VISIBLE,
+				g_CONTROL_BUTTONS_START_X, g_CONTROL_BUTTONS_START_Y,
+				g_BUTTON_SIZE, g_BUTTON_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_CLEAR,
+				GetModuleHandle(NULL),
+				NULL
+			);
+
+			CreateWindowEx(
+				NULL, "Button", "=",
+				WS_CHILD | WS_VISIBLE,
+				g_CONTROL_BUTTONS_START_X, g_CONTROL_BUTTONS_START_Y +(g_BUTTON_SIZE + g_INTERVAL)* 2, 
+				g_BUTTON_SIZE, g_BUTTON_SIZE, 
+				hwnd,
+				(HMENU)IDC_BUTTON_EQUAL ,
+				GetModuleHandle(NULL),
+				NULL
+			);
 	}break;
-	case WM_COMMAND: break;
+	case WM_COMMAND:
+	{
+		CHAR display[256]{};
+		CHAR digit[2]{};
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+		{
+			digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+			if (display[0] == '0' && display[1] != '.')display[0] = 0;
+
+			strcat_s(display, digit);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_POINT)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+			if (strchr(display, '.'))break;
+			strcat(display, ".");
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_BSP)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+
+			if (strlen(display) == 1)display[0] = '0';
+			else display[strlen(display) - 1] = 0;
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_CLEAR)
+		{
+			display[0] = '0';
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
+
+	}break;
 
 	case WM_DESTROY: 
 		PostQuitMessage(0);
