@@ -49,7 +49,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//create buffer
 			char sz_buffer[256]{}; //sz - string zero(NULL Terminated Line - C-String)
 
-			// get deskriptors of text lines.
+			// get descriptors of text lines.
 			HWND hEditLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN);
 			HWND hEditPassword = GetDlgItem(hwnd, IDC_EDIT_PASSWORD);
 

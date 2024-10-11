@@ -152,8 +152,11 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 	{
 		//UINT width = LOWORD(lParam); client area idk??? mb title bar's not included.
-		//UINT height = HIWORD(lParam); differ from rect coordinates. 
-		RECT rect;
+		//UINT height = HIWORD(lParam); differ from rect coordinates.
+		
+
+
+		/*RECT rect;
 		CHAR title[256]{};
 
 		GetWindowRect(hwnd, &rect);
@@ -163,9 +166,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		sprintf_s(title, titlebar, height, width, rect.left, rect.top);
 
 		
-		SetWindowText(hwnd, title);
-		
-	}break;
+		SetWindowText(hwnd, title);*/
+		//no break, 'cause its body is similar to WM_MOVE
+	}
 
 	case WM_MOVE:
 	{
