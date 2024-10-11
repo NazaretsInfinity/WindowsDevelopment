@@ -6,7 +6,7 @@
 
 // name of class window
 CONST CHAR g_sz_WINDOW_CLASS[] = "Main Window! :4"; 
-CONST CHAR titlebar[] = "Main Window!"; 
+CONST CHAR titlebar[] = "Main Window! Size: %ix%i, Position: X: %i Y: %i"; 
 
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -151,25 +151,34 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SIZE:
 	{
-		UINT width = LOWORD(lParam);
-		UINT height = HIWORD(lParam);
-
+		//UINT width = LOWORD(lParam); client area idk??? mb title bar's not included.
+		//UINT height = HIWORD(lParam); differ from rect coordinates. 
+		RECT rect;
 		CHAR title[256]{};
-		sprintf_s(title, "%s Size: %ix%i", titlebar, height, width);
+
+		GetWindowRect(hwnd, &rect);
+	    INT width = rect.right - rect.left;
+	    INT height = rect.bottom - rect.top;
+
+		sprintf_s(title, titlebar, height, width, rect.left, rect.top);
+
+		
 		SetWindowText(hwnd, title);
 		
 	}break;
 
 	case WM_MOVE:
 	{
-		UINT x = LOWORD(lParam);
-		UINT y = HIWORD(lParam);
+		//UINT x = LOWORD(lParam);
+		//UINT y = HIWORD(lParam);
 		
 		CHAR title[256]{};
-	
+		RECT rect;
+		GetWindowRect(hwnd, &rect);
+		INT width =  rect.right-rect.left;
+		INT height = rect.bottom - rect.top;
 		
-		
-		sprintf_s(title, "%s Position: X: %i Y: %i", titlebar, x, y);
+		sprintf_s(title, titlebar, height, width  , rect.left, rect.top);
 		SetWindowText(hwnd, title);
 
 	}break;
