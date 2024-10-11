@@ -6,6 +6,7 @@
 
 // name of class window
 CONST CHAR g_sz_WINDOW_CLASS[] = "Main Window! :4"; 
+CONST CHAR titlebar[] = "Main Window!"; 
 
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -63,14 +64,13 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	}
 
 
-	CHAR buffer[256];
-	sprintf_s(buffer, "%s, %i x %i", g_sz_WINDOW_CLASS, 0, 0);
+	
 	//2) Create window
 
 	HWND hwnd = CreateWindowEx(
       NULL, //Window exStyle
       g_sz_WINDOW_CLASS, // Window class name
-      buffer, //Window title
+      titlebar, //Window title
       WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_SYSMENU, //Windows style
 	  0,0,
       CW_USEDEFAULT, CW_USEDEFAULT, //Window size
@@ -139,10 +139,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 
-		CreateWindowEx(NULL, "Button", "OKAY BOY",
+		CreateWindowEx(NULL, "Button", "AYE!",
 			WS_CHILD | WS_VISIBLE,
 			150, 80,
-			300, 400,
+			50, 40,
 			hwnd,
 			(HMENU)IDC_BUTTON,
 			GetModuleHandle(NULL),
@@ -154,10 +154,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		UINT width = LOWORD(lParam);
 		UINT height = HIWORD(lParam);
 
-
-		CHAR buffer[256]{};
-		sprintf_s(buffer, "Size: %ix%i",width, height);
-		SetWindowText(hwnd, buffer);
+		CHAR title[256]{};
+		sprintf_s(title, "%s Size: %ix%i", titlebar, height, width);
+		SetWindowText(hwnd, title);
 		
 	}break;
 
@@ -165,11 +164,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		UINT x = LOWORD(lParam);
 		UINT y = HIWORD(lParam);
-		CHAR buffer[256]{};
+		
 		CHAR title[256]{};
+	
 		
 		
-		sprintf_s(title, "Position: X:%i Y:%i", x, y);
+		sprintf_s(title, "%s Position: X: %i Y: %i", titlebar, x, y);
 		SetWindowText(hwnd, title);
 
 	}break;
@@ -183,6 +183,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CHAR buffer[256];
 			HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
 			SendMessage(hEdit, WM_GETTEXT, 256, (LPARAM)buffer);
+
 
 			HWND hStatic = GetDlgItem(hwnd, IDC_STATIC);
 			SendMessage(hStatic, WM_SETTEXT, 0, (LPARAM)buffer);
