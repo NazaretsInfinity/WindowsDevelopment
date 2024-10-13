@@ -16,7 +16,7 @@ CONST INT g_OPERATIONS_START_Y = g_BUTTON_START_Y;
 CONST INT g_CONTROL_BUTTONS_START_X = gX+ (g_BUTTON_SIZE + g_INTERVAL) * 4;
 CONST INT g_CONTROL_BUTTONS_START_Y = g_BUTTON_START_Y;
 
-CONST CHAR g_OPERATIONS[] = "*/-+";
+CONST CHAR g_OPERATIONS[] = "+-*/";
 
 
 BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -63,7 +63,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		WS_SYSMENU, 
 		CW_USEDEFAULT,CW_USEDEFAULT,
 		g_DISPLAY_WIDTH + g_BUTTON_START_X*2+16,
-		g_DISPLAY_HEIGHT*12+22, // FIX HERE
+		g_DISPLAY_HEIGHT + (g_BUTTON_SIZE + g_INTERVAL) * 4 + gY * 2 + 16 + 23, // FIX HERE
 		NULL,
 		NULL,
 		hInstance,
@@ -157,7 +157,7 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					g_OPERATIONS_START_X, g_OPERATIONS_START_Y+ (g_BUTTON_SIZE + g_INTERVAL) * i,
 					g_BUTTON_SIZE, g_BUTTON_SIZE, 
 					hwnd, 
-					(HMENU)IDC_BUTTON_PLUS+i,
+					(HMENU)(IDC_BUTTON_PLUS+i),
 					GetModuleHandle(NULL),
 					NULL
 					);
@@ -232,8 +232,19 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if (LOWORD(wParam) == IDC_BUTTON_CLEAR)
 		{
-			display[0] = '0';
+			display[0] = 0;
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
+
+		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
+		{
+			SendMessage(GetDlgItem(hwnd, LOWORD(wParam)), WM_GETTEXT, 2, (LPARAM)digit);
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+
+			if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0)break;
+			strcat_s(display, digit);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+
 		}
 
 	}break;
