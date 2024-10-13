@@ -203,6 +203,8 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CHAR display[256]{};
 		CHAR digit[2]{};
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+
+		//numbers
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
 			digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
@@ -213,6 +215,7 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
+		//point
 		if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
@@ -221,6 +224,7 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
+		//backspace
 		if (LOWORD(wParam) == IDC_BUTTON_BSP)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
@@ -230,12 +234,14 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
+		//clear
 		if (LOWORD(wParam) == IDC_BUTTON_CLEAR)
 		{
 			display[0] = 0;
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
+		//operators
 		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
 		{
 			SendMessage(GetDlgItem(hwnd, LOWORD(wParam)), WM_GETTEXT, 2, (LPARAM)digit);
@@ -244,7 +250,47 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0)break;
 			strcat_s(display, digit);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+		}
 
+		//equal 
+		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+		{
+			DOUBLE numbers[2]{};
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+			char operation = *(strpbrk(display, g_OPERATIONS));
+			INT n = 0;
+			for (CHAR* ptr = strtok(display, g_OPERATIONS); ptr; ptr = strtok(NULL, g_OPERATIONS))
+			{
+				numbers[n] = strtod(ptr, NULL);
+				++n;
+			}
+			display[0] = 0;
+
+
+			switch (operation)
+			{
+			case '+':sprintf(display, "%F", (numbers[0] + numbers[1]));
+			break;
+			case '-':sprintf(display, "%F", (numbers[0] - numbers[1]));
+				break;
+			case '/':sprintf(display, "%F", (numbers[0] / numbers[1]));
+				break;
+			case '*':sprintf(display, "%F", (numbers[0] * numbers[1]));
+				break;
+			}
+
+				
+			// delete extra zeroes 
+            while(display[strlen(display) - 1] == '0')
+				display[strlen(display)-1] = 0;
+			// delete point
+			if(display[strlen(display) - 1] == '.')
+				display[strlen(display) - 1] = 0;
+				
+			
+			
+			
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
 	}break;
