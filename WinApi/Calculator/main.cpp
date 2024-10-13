@@ -247,7 +247,7 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(GetDlgItem(hwnd, LOWORD(wParam)), WM_GETTEXT, 2, (LPARAM)digit);
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
 
-			if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0)break;
+			if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0 || display[strlen(display)-1] == '.') break; //case point 
 			strcat_s(display, digit);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
@@ -280,16 +280,13 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 				
-			// delete extra zeroes 
+			
             while(display[strlen(display) - 1] == '0')
 				display[strlen(display)-1] = 0;
-			// delete point
+			
 			if(display[strlen(display) - 1] == '.')
 				display[strlen(display) - 1] = 0;
-				
-			
-			
-			
+					
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
