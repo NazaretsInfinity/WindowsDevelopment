@@ -33,8 +33,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 
 	//Appearance
-	wClass.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-	wClass.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
+	wClass.hIcon = (HICON)LoadImage(hInstance, "ICO\\calc.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
+	wClass.hIcon = (HICON)LoadImage(hInstance, "ICO\\calc.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
 
 	wClass.hCursor = LoadCursor(hInstance, IDC_ARROW);
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -219,7 +219,8 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
-			if (strchr(display, '.'))break;
+			if (strchr(display, '.' ))break;
+			
 			strcat(display, ".");
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
