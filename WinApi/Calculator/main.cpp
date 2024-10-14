@@ -1,4 +1,5 @@
 #include<Windows.h>
+#include<float.h>
 #include"resource.h"
 #include<cstdio>
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc";
@@ -22,7 +23,6 @@ CONST CHAR g_OPERATIONS[] = "+-*/";
 BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
-
 	//REGISTER CLASS
 	WNDCLASSEX wClass; 
 	ZeroMemory(&wClass, sizeof(wClass));
@@ -33,8 +33,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 
 	//Appearance
-	wClass.hIcon = (HICON)LoadImage(hInstance, "ICO\\calc.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
-	wClass.hIcon = (HICON)LoadImage(hInstance, "ICO\\calc.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
+	wClass.hIcon = (HICON)LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+	//wClass.hIcon = (HICON)LoadImage(hInstance, "ICO\\calc.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
+
 
 	wClass.hCursor = LoadCursor(hInstance, IDC_ARROW);
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -85,6 +86,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	static DOUBLE a = DBL_MIN, b;
+	static INT operation;
+	static BOOL input;
+	static BOOL operation_input;
+
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -154,7 +161,7 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				CreateWindowEx(
 					NULL, "Button", operation,
 					WS_CHILD | WS_VISIBLE,
-					g_OPERATIONS_START_X, g_OPERATIONS_START_Y+ (g_BUTTON_SIZE + g_INTERVAL) * i,
+					g_OPERATIONS_START_X, g_OPERATIONS_START_Y+ (g_BUTTON_SIZE + g_INTERVAL) * (4-1-i),
 					g_BUTTON_SIZE, g_BUTTON_SIZE, 
 					hwnd, 
 					(HMENU)(IDC_BUTTON_PLUS+i),
@@ -207,19 +214,24 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//numbers
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
+			if (input == FALSE && operation_input == TRUE)
+			{
+				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"");
+			}
 			digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
 			if (display[0] == '0' && display[1] != '.')display[0] = 0;
 
 			strcat_s(display, digit);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+			input = TRUE;
 		}
 
 		//point
 		if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
-			if (strchr(display, '.' ))break;
+			if (strchr(display, '.' ))break; // fix er
 			
 			strcat(display, ".");
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
@@ -240,29 +252,43 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			display[0] = 0;
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+			a = DBL_MIN;
 		}
 
 		//operators
 		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
 		{
-			SendMessage(GetDlgItem(hwnd, LOWORD(wParam)), WM_GETTEXT, 2, (LPARAM)digit);
-			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+			/*	SendMessage(GetDlgItem(hwnd, LOWORD(wParam)), WM_GETTEXT, 2, (LPARAM)digit);
+				SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
 
-			if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0 || display[strlen(display)-1] == '.') break; //case point 
-			strcat_s(display, digit);
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
+				if (display[0] == 0 || strpbrk(display, g_OPERATIONS)!=0 || display[strlen(display)-1] == '.') break;
+				strcat_s(display, digit);
+				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);*/
+
+			
+				SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+				if (a == DBL_MIN)a = strtod(display, NULL);
+				else b = strtod(display, NULL);
+				if(input)SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_EQUAL), 0);
+				operation = LOWORD(wParam);
+				input = FALSE;
+				operation_input = TRUE;
+			
+
 		}
-
 		//equal 
 		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
 		{
-			DOUBLE numbers[2]{};
+			/*DOUBLE numbers[2]{};
 			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+
+			if ((strpbrk(display, g_OPERATIONS)) == 0)break;
 			char operation = *(strpbrk(display, g_OPERATIONS));
 			INT n = 0;
 			for (CHAR* ptr = strtok(display, g_OPERATIONS); ptr; ptr = strtok(NULL, g_OPERATIONS))
 			{
 				numbers[n] = strtod(ptr, NULL);
+				
 				++n;
 			}
 			display[0] = 0;
@@ -288,6 +314,19 @@ BOOL CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if(display[strlen(display) - 1] == '.')
 				display[strlen(display) - 1] = 0;
 					
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);*/
+
+			SendMessage(hEditDisplay, WM_GETTEXT, 256, (LPARAM)display);
+		     if(operation_input)b = strtod(display, NULL);
+			switch (operation)
+			{
+			case IDC_BUTTON_PLUS: a += b; break;
+			case IDC_BUTTON_MINUS: a -= b; break;
+			case IDC_BUTTON_ASTER: a *= b; break;
+			case IDC_BUTTON_SLASH: a /= b; break;
+			}
+			operation_input = FALSE;
+			sprintf_s(display, "%g", a);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)display);
 		}
 
